@@ -2,31 +2,31 @@ package Catalyst::View::GD::Barcode;
 
 use strict;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
-my($Revision) = '$Id: Barcode.pm,v 1.1 2006/02/21 06:21:10 yanagisawa Exp $';
+my($Revision) = '$Id: Barcode.pm,v 1.3 2006/02/22 02:35:42 yanagisawa Exp $';
 
 =head1 NAME
 
-Catalyst::View::GD::Barcode - GD::BarcodeをCatalystのViewで簡単に利用します。
+Catalyst::View::GD::Barcode - make it easy to use GD::Barcode in Catalyst's View
 
 =head1 SYNOPSIS
 
-バーコードにする文字列を格納します。
+Set string to be converted to barcode.
+
  $c->stash->{'barcode_string'} = '123456';
 
-バーコードの種類を選択します。指定しない場合は、EAN13
+Set barcode type. The default is 'EAN13'.
+
  $c->stash->{'barcode_type'} = 'NW7';
 
-それ以外のGD::Barcodeのオプションを格納します。
+Set any other GD::Barcode options.
+
  $c->stash->{'barcode_option'} = {NoText => 1}
 
-実際に出力します。
+Print the barcode.
+
  $c->forward('Catalyst::View::GD::Barcode');
-
-=head1 DESCRIPTION
-
-Redirect for Catalyst used easily is offered.
 
 =head1 METHODS
 
@@ -34,9 +34,9 @@ Redirect for Catalyst used easily is offered.
 
 =item gen_barcoed
 
-GD::Barcodeを使用して、バーコードを作ります。
-バーコードの文字列とtypeを指定するだけでそれ以外のことを考える必要はありません。
-正しい処理ができなかった場合は、text/plainで文字列を返します。
+Generate barcode using GD::Barcode.
+You only need to set string and barcode type and no need to bother anything else.
+If it fails, it returns the string in plain text.
 
 =back
 
@@ -83,7 +83,7 @@ sub gen_barcode {
 
 =item process
 
-$c->res->body()にバーコードの文字列を詰め込みます。
+Set code in $c->res->body().
 
 =back
 
@@ -100,7 +100,7 @@ sub process{
 
 =item calc_checkdigit
 
-チェックディジットを計算して返します。
+Returns the calculated check digit.
 
 =back
 
