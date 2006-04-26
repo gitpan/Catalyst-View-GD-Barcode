@@ -2,9 +2,9 @@ package Catalyst::View::GD::Barcode;
 
 use strict;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
-my($Revision) = '$Id: Barcode.pm,v 1.3 2006/02/22 02:35:42 yanagisawa Exp $';
+my($Revision) = '$Id: Barcode.pm,v 1.5 2006/04/26 13:59:45 yanagisawa Exp $';
 
 =head1 NAME
 
@@ -16,9 +16,17 @@ Set string to be converted to barcode.
 
  $c->stash->{'barcode_string'} = '123456';
 
-Set barcode type. The default is 'EAN13'.
+Set barcode type. The default is 'NW7'.
 
  $c->stash->{'barcode_type'} = 'NW7';
+
+ COOP2of5 | Code39 | EAN13 | EAN8 | IATA2of5 | ITF | Industrial2of5 | Matrix2of5 | NW7
+
+Set barcode size option.
+
+ $c->stash->{'barcode_size'} = 10;
+
+ When the number of digit is insufficient, it buries by 0.
 
 Set any other GD::Barcode options.
 
@@ -48,9 +56,12 @@ sub gen_barcode {
     my $c = shift;
     my $str =  $c->stash->{'barcode_string'};
     my $type = $c->stash->{'barcode_type'};
+    die "not integer barcode_size" if($c->stash->{'barcode_size'} =~ /\D/);
+    my $size = sprintf('%%0%ss', $c->stash->{'barcode_size'} || length($c->stash->{'barcode_string'}));
     my $opt = {};
     if($str) {
 	##### set option
+	my $size = sprintf('%%0%ss', $c->stash->{'barcode_size'});
 	$opt = $c->stash->{'barcode_option'};
 	$type ||= 'EAN13';
 	my($Barcode);
@@ -61,10 +72,14 @@ sub gen_barcode {
 	}
 	if ($type eq 'EAN13') {
 	    $Barcode = $m_name->new($self->calc_checkdigit(sprintf('%012s', $str)));
-	} elsif($type eq 'Code39') {
-	    $Barcode = $m_name->new('*'.$str.'*');
-	} else {
-	    $Barcode = $m_name->new($str);
+	} elsif ($type eq 'EAN8') {
+	    $Barcode = $m_name->new($self->calc_checkdigit(sprintf('%07s', $str)));
+	}elsif($type eq 'Code39') {
+	    $Barcode = $m_name->new('*'. sprintf($size, $str).'*');
+	} elsif($type eq 'NW7') {
+	    $Barcode = $m_name->new('B'.sprintf($size, $str).'B');
+	}else {
+	    $Barcode = $m_name->new(sprintf($size,$str));
 	}
 	unless($Barcode) {
 	    $c->res->header('Content-Type' => 'text/plain');

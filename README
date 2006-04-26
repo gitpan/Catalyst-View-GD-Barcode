@@ -1,4 +1,4 @@
-Catalyst-View-GD-Barcode version 0.02
+Catalyst-View-GD-Barcode version 0.03
 =====================================
 
 NAME
@@ -14,7 +14,15 @@ SYNOPSIS
   Set barcode type. The default is 'EAN13'.
 
     $c->stash->{'barcode_type'} = 'NW7';
+    
+	COOP2of5 | Code39 | EAN13 | EAN8 | IATA2of5 | ITF | Industrial2of5 | Matrix2of5 | NW7
+  
+  Set barcode size option.
 
+	$c->stash->{'barcode_size'} = 10;
+
+	When the number of digit is insufficient, it buries by 0.
+  
   Set any other GD::Barcode options.
 
     $c->stash->{'barcode_option'} = {NoText => 1}
