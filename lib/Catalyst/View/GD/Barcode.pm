@@ -2,7 +2,7 @@ package Catalyst::View::GD::Barcode;
 
 use strict;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 my($Revision) = '$Id: Barcode.pm,v 1.5 2006/04/26 13:59:45 yanagisawa Exp $';
 
@@ -20,7 +20,7 @@ Set barcode type. The default is 'NW7'.
 
  $c->stash->{'barcode_type'} = 'NW7';
 
- COOP2of5 | Code39 | EAN13 | EAN8 | IATA2of5 | ITF | Industrial2of5 | Matrix2of5 | NW7
+ COOP2of5 | Code39 | EAN13 | EAN8 | IATA2of5 | ITF | Industrial2of5 | Matrix2of5 | NW7 | QRcode 
 
 Set barcode size option.
 
@@ -78,6 +78,8 @@ sub gen_barcode {
 	    $Barcode = $m_name->new('*'. sprintf($size, $str).'*');
 	} elsif($type eq 'NW7') {
 	    $Barcode = $m_name->new('B'.sprintf($size, $str).'B');
+	} elsif($type eq 'QRcode') {
+	    $Barcode = $m_name->new(sprintf($size,$str), $opt);
 	}else {
 	    $Barcode = $m_name->new(sprintf($size,$str));
 	}
