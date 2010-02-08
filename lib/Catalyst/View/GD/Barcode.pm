@@ -2,7 +2,7 @@ package Catalyst::View::GD::Barcode;
 
 use strict;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 my($Revision) = '$Id: Barcode.pm,v 1.5 2006/04/26 13:59:45 yanagisawa Exp $';
 
@@ -27,6 +27,12 @@ Set barcode size option.
  $c->stash->{'barcode_size'} = 10;
 
  When the number of digit is insufficient, it buries by 0.
+
+Set content type option. The default is 'png'.
+
+ $c->stash->{'content_type'} = 'png';
+
+ png | gif | jpeg 
 
 Set any other GD::Barcode options.
 
@@ -58,6 +64,7 @@ sub gen_barcode {
     my $type = $c->stash->{'barcode_type'};
     die "not integer barcode_size" if($c->stash->{'barcode_size'} =~ /\D/);
     my $size = sprintf('%%0%ss', $c->stash->{'barcode_size'} || length($c->stash->{'barcode_string'}));
+    my $content_type = $c->stash->{'content_type'} || 'png';
     my $opt = {};
     if($str) {
 	##### set option
@@ -87,11 +94,11 @@ sub gen_barcode {
 	    $c->res->header('Content-Type' => 'text/plain');
 	    return $GD::Barcode::errStr;
 	} else {
-	    $c->res->header('Content-Type' => 'image/png');
-	    return $Barcode->plot(%{$opt})->png();
+	    $c->res->header('Content-Type' => 'image/'.$content_type);
+	    return $Barcode->plot(%{$opt})->$content_type();
 	}
     }else{
-	$c->res->header('Content-Type' => 'image/png');
+	$c->res->header('Content-Type' => 'image/'.$content_type);
 	return 'No Barcode String';
     }
 }
